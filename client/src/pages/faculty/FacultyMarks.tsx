@@ -59,7 +59,7 @@ interface Mark {
   exam_type: ExamType;
   marks_obtained: number;
   total_marks: number;
-  year: number;
+  academic_year: string;
   student_roll?: string;
   subject_name?: string;
   subject_code?: string;
@@ -100,7 +100,7 @@ const FacultyMarks = () => {
     subject_id: "",
     marks_obtained: "",
     total_marks: "100",
-    year: new Date().getFullYear().toString(),
+    academicYear: "2025-26",
   });
 
   useEffect(() => {
@@ -181,7 +181,7 @@ const FacultyMarks = () => {
           exam_type: selectedExamType,
           marks_obtained: marksObtained,
           total_marks: totalMarks,
-          year: Number(formData.year),
+          academic_year: formData.academicYear,
           entered_by: profile.id,
         }),
       });
@@ -199,7 +199,7 @@ const FacultyMarks = () => {
         subject_id: "",
         marks_obtained: "",
         total_marks: "100",
-        year: new Date().getFullYear().toString(),
+        academicYear: "2025-26",
       });
       fetchData();
     } catch (error) {
@@ -267,7 +267,7 @@ const FacultyMarks = () => {
               </DialogHeader>
               <form onSubmit={handleSubmit} className="space-y-4 mt-4">
                 <div>
-                  <Label>Student</Label>
+                  <Label>Student (Semester {selectedSemester})</Label>
                   <Select
                     value={formData.student_id}
                     onValueChange={(value) =>
@@ -278,11 +278,13 @@ const FacultyMarks = () => {
                       <SelectValue placeholder="Select student" />
                     </SelectTrigger>
                     <SelectContent>
-                      {students.map((student) => (
-                        <SelectItem key={student._id} value={student._id}>
-                          {student.roll_number} ({student.branch_code})
-                        </SelectItem>
-                      ))}
+                      {students
+                        .filter((student) => student.year_of_study === Number(selectedSemester))
+                        .map((student) => (
+                          <SelectItem key={student._id} value={student._id}>
+                            {student.roll_number} - Year {student.year_of_study} ({student.branch_code})
+                          </SelectItem>
+                        ))}
                     </SelectContent>
                   </Select>
                 </div>
@@ -336,16 +338,16 @@ const FacultyMarks = () => {
                 </div>
 
                 <div>
-                  <Label>Year</Label>
+                  <Label>Academic Year</Label>
                   <Input
-                    type="number"
-                    value={formData.year}
+                    type="text"
+                    value={formData.academicYear}
                     onChange={(e) =>
-                      setFormData({ ...formData, year: e.target.value })
+                      setFormData({ ...formData, academicYear: e.target.value })
                     }
-                    placeholder="e.g., 2026"
+                    placeholder="e.g., 2025-26"
                     className="mt-1"
-                    min="2000"
+                    pattern="\d{4}-\d{2}"
                   />
                 </div>
 

@@ -267,7 +267,7 @@ const FacultyMarks = () => {
               </DialogHeader>
               <form onSubmit={handleSubmit} className="space-y-4 mt-4">
                 <div>
-                  <Label>Student (AP - Semester {selectedSemester})</Label>
+                  <Label>Student (Semester {selectedSemester})</Label>
                   <Select
                     value={formData.student_id}
                     onValueChange={(value) =>
@@ -280,8 +280,7 @@ const FacultyMarks = () => {
                     <SelectContent>
                       {students
                         .filter((student) => {
-                          // AP polytechnic: Year 1 → semesters 1-2, Year 2 → semesters 3-4, Year 3 → semesters 5-6
-                          if (student.branch_code !== "AP") return false;
+                          // Filter by year-to-semester mapping: Year 1 → 1-2, Year 2 → 3-4, Year 3 → 5-6
                           const year = student.year_of_study;
                           const sem = Number(selectedSemester);
                           if (year === 1) return sem === 1 || sem === 2;

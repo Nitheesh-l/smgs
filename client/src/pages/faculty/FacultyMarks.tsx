@@ -288,6 +288,7 @@ const FacultyMarks = () => {
                           if (year === 3) return sem === 5 || sem === 6;
                           return false;
                         })
+                        .sort((a, b) => a.roll_number.localeCompare(b.roll_number))
                         .map((student) => (
                           <SelectItem key={student._id} value={student._id}>
                             {student.roll_number} - Year {student.year_of_study}

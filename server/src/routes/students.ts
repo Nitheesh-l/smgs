@@ -165,6 +165,24 @@ router.delete('/:id', async (req: Request, res: Response) => {
     // Delete the student record
     const deleteStudent = await db.collection('students').deleteOne({ _id: new ObjectId(id) });
 
+    // Delete all attendance records for this student
+    let attendanceDeleted = 0;
+    try {
+      const delAttendance = await db.collection('attendance').deleteMany({ student_id: new ObjectId(id) });
+      attendanceDeleted = delAttendance.deletedCount ?? 0;
+    } catch (err) {
+      console.error('Error deleting attendance for student', id, err);
+    }
+
+    // Delete all marks records for this student
+    let marksDeleted = 0;
+    try {
+      const delMarks = await db.collection('marks').deleteMany({ student_id: new ObjectId(id) });
+      marksDeleted = delMarks.deletedCount ?? 0;
+    } catch (err) {
+      console.error('Error deleting marks for student', id, err);
+    }
+
     // Attempt to delete linked profile if present
     let profileDeleted = 0;
     try {
@@ -183,7 +201,7 @@ router.delete('/:id', async (req: Request, res: Response) => {
       console.error('Error deleting linked profile for student', id, err);
     }
 
-    return res.json({ success: true, studentDeleted: deleteStudent.deletedCount, profileDeleted });
+    return res.json({ success: true, studentDeleted: deleteStudent.deletedCount, attendanceDeleted, marksDeleted, profileDeleted });
   } catch (error) {
     console.error('Error deleting student:', error);
     return res.status(500).json({ error: 'Failed to delete student' });

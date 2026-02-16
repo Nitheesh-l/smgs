@@ -59,6 +59,7 @@ interface Mark {
   exam_type: ExamType;
   marks_obtained: number;
   total_marks: number;
+  year: number;
   student_roll?: string;
   subject_name?: string;
   subject_code?: string;
@@ -99,6 +100,7 @@ const FacultyMarks = () => {
     subject_id: "",
     marks_obtained: "",
     total_marks: "100",
+    year: new Date().getFullYear().toString(),
   });
 
   useEffect(() => {
@@ -179,6 +181,7 @@ const FacultyMarks = () => {
           exam_type: selectedExamType,
           marks_obtained: marksObtained,
           total_marks: totalMarks,
+          year: Number(formData.year),
           entered_by: profile.id,
         }),
       });
@@ -196,6 +199,7 @@ const FacultyMarks = () => {
         subject_id: "",
         marks_obtained: "",
         total_marks: "100",
+        year: new Date().getFullYear().toString(),
       });
       fetchData();
     } catch (error) {
@@ -329,6 +333,20 @@ const FacultyMarks = () => {
                       className="mt-1"
                     />
                   </div>
+                </div>
+
+                <div>
+                  <Label>Year</Label>
+                  <Input
+                    type="number"
+                    value={formData.year}
+                    onChange={(e) =>
+                      setFormData({ ...formData, year: e.target.value })
+                    }
+                    placeholder="e.g., 2026"
+                    className="mt-1"
+                    min="2000"
+                  />
                 </div>
 
                 <div className="flex gap-3 pt-4">

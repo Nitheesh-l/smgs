@@ -115,13 +115,7 @@ const Auth = () => {
 
         const { error } = await signIn(formData.email, formData.password, userType);
         if (error) {
-          if (error.message.includes("Invalid login credentials")) {
-            toast.error("Invalid email or password");
-          } else if (error.message.includes("Email not confirmed")) {
-            toast.error("Please verify your email before logging in");
-          } else {
-            toast.error(error.message);
-          }
+          toast.error(error.message || "Invalid credentials");
           setLoading(false);
           return;
         }
@@ -147,13 +141,8 @@ const Auth = () => {
           formData.fullName,
           userType
         );
-
         if (error) {
-          if (error.message.includes("User already registered")) {
-            toast.error("An account with this email already exists");
-          } else {
-            toast.error(error.message);
-          }
+          toast.error(error.message || "Sign up failed");
           setLoading(false);
           return;
         }

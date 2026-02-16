@@ -62,7 +62,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       });
 
       if (!res.ok) {
-        throw new Error(data?.error || 'Sign in failed');
+        return { error: { message: data?.error || 'Sign in failed' } };
       }
 
       if (data?.user) {
@@ -70,10 +70,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         localStorage.setItem('auth_user', JSON.stringify(data.user));
         toast.success('Signed in successfully');
       }
+      return {};
     } catch (error) {
       const msg = error instanceof Error ? error.message : 'Sign in failed';
       toast.error(msg);
-      throw error;
+      return { error: { message: msg } };
     }
   };
 
@@ -86,7 +87,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       });
 
       if (!res.ok) {
-        throw new Error(data?.error || 'Sign up failed');
+        return { error: { message: data?.error || 'Sign up failed' } };
       }
 
       if (data?.user) {
@@ -94,10 +95,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         localStorage.setItem('auth_user', JSON.stringify(data.user));
         toast.success('Account created successfully');
       }
+      return {};
     } catch (error) {
       const msg = error instanceof Error ? error.message : 'Sign up failed';
       toast.error(msg);
-      throw error;
+      return { error: { message: msg } };
     }
   };
 

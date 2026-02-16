@@ -267,7 +267,7 @@ const FacultyMarks = () => {
               </DialogHeader>
               <form onSubmit={handleSubmit} className="space-y-4 mt-4">
                 <div>
-                  <Label>Student (Semester {selectedSemester})</Label>
+                  <Label>Student (AP - Semester {selectedSemester})</Label>
                   <Select
                     value={formData.student_id}
                     onValueChange={(value) =>
@@ -279,10 +279,19 @@ const FacultyMarks = () => {
                     </SelectTrigger>
                     <SelectContent>
                       {students
-                        .filter((student) => student.year_of_study === Number(selectedSemester))
+                        .filter((student) => {
+                          // AP polytechnic: Year 1 → semesters 1-2, Year 2 → semesters 3-4, Year 3 → semesters 5-6
+                          if (student.branch_code !== "AP") return false;
+                          const year = student.year_of_study;
+                          const sem = Number(selectedSemester);
+                          if (year === 1) return sem === 1 || sem === 2;
+                          if (year === 2) return sem === 3 || sem === 4;
+                          if (year === 3) return sem === 5 || sem === 6;
+                          return false;
+                        })
                         .map((student) => (
                           <SelectItem key={student._id} value={student._id}>
-                            {student.roll_number} - Year {student.year_of_study} ({student.branch_code})
+                            {student.roll_number} - Year {student.year_of_study}
                           </SelectItem>
                         ))}
                     </SelectContent>
@@ -442,7 +451,7 @@ const FacultyMarks = () => {
                     <Select value={String(subjectForm.semester)} onValueChange={(v) => setSubjectForm({ ...subjectForm, semester: Number(v) })}>
                       <SelectTrigger className="mt-1"><SelectValue /></SelectTrigger>
                       <SelectContent>
-                        {[1,2,3,4,5,6,7,8].map((s)=> <SelectItem key={s} value={String(s)}>Semester {s}</SelectItem>)}
+                          {[1,2,3,4,5,6].map((s)=> <SelectItem key={s} value={String(s)}>Semester {s}</SelectItem>)}
                       </SelectContent>
                     </Select>
                   </div>
@@ -513,7 +522,7 @@ const FacultyMarks = () => {
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
-                  {[1, 2, 3, 4, 5, 6, 7, 8].map((sem) => (
+                  {[1, 2, 3, 4, 5, 6].map((sem) => (
                     <SelectItem key={sem} value={String(sem)}>
                       Semester {sem}
                     </SelectItem>

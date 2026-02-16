@@ -187,6 +187,8 @@ const FacultyStudents = () => {
     setEditingStudent(student);
     setFormData({
       roll_number: student.roll_number,
+      full_name: "",
+      password: "",
       year_of_study: student.year_of_study,
       gender: student.gender,
       phone_number: student.phone_number || "",

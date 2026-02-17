@@ -1,5 +1,6 @@
 import { Router, Request, Response } from 'express';
 import { getDb } from '../mongo';
+import { ObjectId } from 'mongodb';
 
 const router = Router();
 
@@ -33,7 +34,7 @@ router.get('/', async (req: Request, res: Response) => {
     // Count attendance today for students in scope
     let attendanceQuery: any = { date: todayStr, status: 'Present' };
     if (studentIdSet.size > 0) {
-      const studentIdArray = Array.from(studentIdSet);
+      const studentIdArray = Array.from(studentIdSet).map(id => new ObjectId(id));
       attendanceQuery.student_id = { $in: studentIdArray };
     }
     const attendanceToday = await db.collection('attendance').countDocuments(attendanceQuery);
@@ -44,7 +45,7 @@ router.get('/', async (req: Request, res: Response) => {
 
     let attendanceMatch: any = { month: month, year: calendarYear };
     if (studentIdSet.size > 0) {
-      const studentIdArray = Array.from(studentIdSet);
+      const studentIdArray = Array.from(studentIdSet).map(id => new ObjectId(id));
       attendanceMatch.student_id = { $in: studentIdArray };
     }
 

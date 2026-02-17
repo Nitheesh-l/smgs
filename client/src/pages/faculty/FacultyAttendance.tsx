@@ -75,11 +75,19 @@ const FacultyAttendance = () => {
 
       // Build attendance map. Server stores periods_present/total_periods/status.
       const attendanceMap: Record<string, boolean> = {};
+      
+      // Create a set of student IDs from filtered students for quick lookup
+      const filteredStudentIds = new Set(filteredStudents.map(s => s._id));
+      
+      // Only add attendance records for students in the selected year
       attendanceArray.forEach((record: any) => {
         const sid = String(record.student_id ?? record.student_id?._id ?? '');
-        const periods = Number(record.periods_present ?? 0);
-        const status = record.status ?? '';
-        attendanceMap[sid] = periods > 0 || status === 'Present';
+        // Only include attendance if this student is in the selected year
+        if (filteredStudentIds.has(sid)) {
+          const periods = Number(record.periods_present ?? 0);
+          const status = record.status ?? '';
+          attendanceMap[sid] = periods > 0 || status === 'Present';
+        }
       });
       setAttendance(attendanceMap);
     } catch (error) {

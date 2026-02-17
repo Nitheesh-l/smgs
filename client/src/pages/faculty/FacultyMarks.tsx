@@ -94,6 +94,7 @@ const FacultyMarks = () => {
     sessional: 40,
   });
   const [selectedSemester, setSelectedSemester] = useState("1");
+  const [selectedYear, setSelectedYear] = useState("1");
   const [selectedExamType, setSelectedExamType] = useState<ExamType>("unit_test_internal");
   const [formData, setFormData] = useState({
     student_id: "",
@@ -516,17 +517,36 @@ const FacultyMarks = () => {
               <span className="text-sm font-medium">Filters:</span>
             </div>
             <div className="flex items-center gap-2">
+              <span className="text-sm text-muted-foreground">Year:</span>
+              <Select value={selectedYear} onValueChange={setSelectedYear}>
+                <SelectTrigger className="w-32">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  {[1, 2, 3].map((year) => (
+                    <SelectItem key={year} value={String(year)}>
+                      Year {year}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+            <div className="flex items-center gap-2">
               <span className="text-sm text-muted-foreground">Semester:</span>
               <Select value={selectedSemester} onValueChange={setSelectedSemester}>
                 <SelectTrigger className="w-32">
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
-                  {[1, 2, 3, 4, 5, 6].map((sem) => (
-                    <SelectItem key={sem} value={String(sem)}>
-                      Semester {sem}
-                    </SelectItem>
-                  ))}
+                  {(() => {
+                    const semesterStart = (Number(selectedYear) - 1) * 2 + 1;
+                    const semesterEnd = Number(selectedYear) * 2;
+                    return [semesterStart, semesterEnd].map((sem) => (
+                      <SelectItem key={sem} value={String(sem)}>
+                        Semester {sem}
+                      </SelectItem>
+                    ));
+                  })()}
                 </SelectContent>
               </Select>
             </div>

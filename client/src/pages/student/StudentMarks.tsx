@@ -71,6 +71,9 @@ const StudentMarks = () => {
           if (student) {
             setStudentId(student._id || student.id);
             setStudentData(student);
+            // Set semester based on year: Year 1 -> Sem 1, Year 2 -> Sem 3, Year 3 -> Sem 5
+            const defaultSemester = String((student.year_of_study - 1) * 2 + 1);
+            setSelectedSemester(defaultSemester);
           }
         }
       } catch (error) {
@@ -178,11 +181,15 @@ const StudentMarks = () => {
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
-                  {[1, 2, 3, 4, 5, 6, 7, 8].map((sem) => (
-                    <SelectItem key={sem} value={String(sem)}>
-                      Semester {sem}
-                    </SelectItem>
-                  ))}
+                  {studentData && (() => {
+                    const semesterStart = (studentData.year_of_study - 1) * 2 + 1;
+                    const semesterEnd = studentData.year_of_study * 2;
+                    return [semesterStart, semesterEnd].map((sem) => (
+                      <SelectItem key={sem} value={String(sem)}>
+                        Semester {sem}
+                      </SelectItem>
+                    ));
+                  })()}
                 </SelectContent>
               </Select>
             </div>

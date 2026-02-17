@@ -57,7 +57,7 @@ const StudentDashboard = () => {
 
         const attendanceList = Array.isArray(attendanceData) ? attendanceData : attendanceData?.data || [];
         const totalDays = attendanceList.length;
-        const presentDays = attendanceList.filter((a: any) => a.is_present).length;
+        const presentDays = attendanceList.filter((a: any) => a.status === 'Present' || a.status === 'Half Day').length;
         const attendancePercentage = totalDays > 0 ? Math.round((presentDays / totalDays) * 100) : 0;
 
         // Fetch marks stats (from API or calculate locally)

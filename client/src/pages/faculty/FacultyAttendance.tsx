@@ -37,7 +37,7 @@ const FacultyAttendance = () => {
   const [attendance, setAttendance] = useState<Record<string, boolean>>({});
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
-  const [selectedYear, setSelectedYear] = useState("1");
+  const [selectedYear, setSelectedYear] = useState<number>(1);
   const [selectedDate, setSelectedDate] = useState(new Date());
 
   useEffect(() => {
@@ -58,7 +58,7 @@ const FacultyAttendance = () => {
       // Ensure data is an array
       const studentsArray = Array.isArray(studentsData) ? studentsData : studentsData?.students || [];
       const filteredStudents = studentsArray
-        .filter((s: Student) => s.year_of_study === Number(selectedYear))
+        .filter((s: Student) => s.year_of_study === selectedYear)
         .sort((a: Student, b: Student) => a.roll_number.localeCompare(b.roll_number));
       setStudents(filteredStudents);
 
@@ -239,22 +239,18 @@ const FacultyAttendance = () => {
 
             {/* Year Filter */}
             <div className="flex items-center gap-4">
-              <div className="flex items-center gap-2">
-                <span className="text-sm text-muted-foreground">Year:</span>
-                <Select
-                  value={selectedYear}
-                  onValueChange={setSelectedYear}
-                >
-                  <SelectTrigger className="w-32">
-                    <SelectValue placeholder="Select year" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="1">1st Year</SelectItem>
-                    <SelectItem value="2">2nd Year</SelectItem>
-                    <SelectItem value="3">3rd Year</SelectItem>
-                    <SelectItem value="4">4th Year</SelectItem>
-                  </SelectContent>
-                </Select>
+              <span className="text-sm text-muted-foreground">Filter by Year:</span>
+              <div className="flex gap-2">
+                {[1, 2, 3].map((year) => (
+                  <Button
+                    key={year}
+                    variant={selectedYear === year ? "default" : "outline"}
+                    onClick={() => setSelectedYear(year)}
+                    className="min-w-[80px]"
+                  >
+                    Year {year}
+                  </Button>
+                ))}
               </div>
             </div>
           </div>

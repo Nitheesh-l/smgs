@@ -67,6 +67,7 @@ const FacultyStudents = () => {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [editingStudent, setEditingStudent] = useState<Student | null>(null);
   const [submitting, setSubmitting] = useState(false);
+  const [selectedYear, setSelectedYear] = useState<number>(1);
   const [formData, setFormData] = useState({
     roll_number: "",
     full_name: "",
@@ -85,7 +86,7 @@ const FacultyStudents = () => {
 
   const fetchStudents = async () => {
     try {
-      const { res, data } = await fetchJson("/api/students");
+      const { res, data } = await fetchJson(`/api/students?year_of_study=${selectedYear}`);
 
       if (!res.ok) {
         toast.error(data?.error || "Failed to fetch students");
@@ -107,7 +108,7 @@ const FacultyStudents = () => {
     if (!authLoading && profile) {
       fetchStudents();
     }
-  }, [profile, authLoading]);
+  }, [profile, authLoading, selectedYear]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -187,7 +188,7 @@ const FacultyStudents = () => {
     setEditingStudent(student);
     setFormData({
       roll_number: student.roll_number,
-      full_name: "",
+      full_name: "",  
       password: "",
       year_of_study: student.year_of_study,
       gender: student.gender,
@@ -398,6 +399,21 @@ const FacultyStudents = () => {
               </form>
             </DialogContent>
           </Dialog>
+        </div>
+
+        {/* Year Selector */}
+        <div className="mb-6 flex gap-4">
+          <p className="text-muted-foreground font-medium flex items-center">Filter by Year:</p>
+          {[1, 2, 3].map((year) => (
+            <Button
+              key={year}
+              variant={selectedYear === year ? "default" : "outline"}
+              onClick={() => setSelectedYear(year)}
+              className="min-w-[80px]"
+            >
+              Year {year}
+            </Button>
+          ))}
         </div>
 
         {/* Search */}

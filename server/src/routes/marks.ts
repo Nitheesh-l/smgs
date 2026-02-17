@@ -10,7 +10,7 @@ marks.get('/', async (req: Request, res: Response) => {
     const { student_id, semester, exam_type } = req.query;
 
     let query: any = {};
-    if (student_id) query.student_id = student_id;
+    if (student_id) query.student_id = new ObjectId(String(student_id));
     if (semester) query.semester = Number(semester);
     if (exam_type) query.exam_type = exam_type;
 

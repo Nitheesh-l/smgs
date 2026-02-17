@@ -61,7 +61,7 @@ const StudentDashboard = () => {
         const attendancePercentage = totalDays > 0 ? Math.round((presentDays / totalDays) * 100) : 0;
 
         // Fetch marks stats (from API or calculate locally)
-        const { res: marksRes, data: marksData } = await fetchJson(`/api/marks?student_id=${student.id}`);
+        const { res: marksRes, data: marksData } = await fetchJson(`/api/marks?student_id=${student._id || student.id}`);
         const marksList = Array.isArray(marksData) ? marksData : marksData?.data || [];
         
         const totalExams = marksList.length;

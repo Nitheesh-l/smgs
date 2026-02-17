@@ -52,7 +52,7 @@ const studentSchema = z.object({
   roll_number: z.string().min(1, "Roll number is required"),
   full_name: z.string().min(2, "Full name is required"),
   password: z.string().min(6, "Password must be at least 6 characters"),
-  year_of_study: z.number().min(1).max(4),
+  year_of_study: z.number().min(1).max(3),
   gender: z.enum(["male", "female", "other"]),
   phone_number: z.string().optional(),
   branch_code: z.string().min(1, "Branch code is required"),
@@ -313,7 +313,6 @@ const FacultyStudents = () => {
                         <SelectItem value="1">1st Year</SelectItem>
                         <SelectItem value="2">2nd Year</SelectItem>
                         <SelectItem value="3">3rd Year</SelectItem>
-                        <SelectItem value="4">4th Year</SelectItem>
                       </SelectContent>
                     </Select>
                   </div>

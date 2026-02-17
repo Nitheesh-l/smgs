@@ -1,2 +1,0 @@
--- Supabase migration file (neutralized). Migrate database structures to MongoDB Atlas instead.
--- Original contents removed during migration.

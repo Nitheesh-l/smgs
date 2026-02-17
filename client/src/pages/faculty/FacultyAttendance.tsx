@@ -50,15 +50,14 @@ const FacultyAttendance = () => {
     try {
       setLoading(true);
 
-      // Fetch all students and filter by year
-      const { res: studentsRes, data: studentsData } = await fetchJson("/api/students");
+      // Fetch students filtered by year
+      const { res: studentsRes, data: studentsData } = await fetchJson(`/api/students?year_of_study=${selectedYear}`);
 
       if (!studentsRes.ok) throw new Error("Failed to fetch students");
 
       // Ensure data is an array
       const studentsArray = Array.isArray(studentsData) ? studentsData : studentsData?.students || [];
       const filteredStudents = studentsArray
-        .filter((s: Student) => s.year_of_study === selectedYear)
         .sort((a: Student, b: Student) => a.roll_number.localeCompare(b.roll_number));
       setStudents(filteredStudents);
 

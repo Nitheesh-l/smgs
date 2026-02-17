@@ -329,12 +329,7 @@ const FacultyStudents = () => {
                         <SelectValue placeholder="Select branch" />
                       </SelectTrigger>
                       <SelectContent>
-                        <SelectItem value="CS">CS</SelectItem>
-                        <SelectItem value="IT">IT</SelectItem>
-                        <SelectItem value="ECE">ECE</SelectItem>
-                        <SelectItem value="EEE">EEE</SelectItem>
-                        <SelectItem value="ME">ME</SelectItem>
-                        <SelectItem value="CE">CE</SelectItem>
+                        <SelectItem value="CSE">CSE</SelectItem>
                       </SelectContent>
                     </Select>
                   </div>

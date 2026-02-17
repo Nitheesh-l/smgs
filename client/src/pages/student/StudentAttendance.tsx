@@ -20,7 +20,9 @@ interface AttendanceRecord {
   date: string;
   month: number;
   year: number;
-  is_present: boolean;
+  status: string;
+  periods_present: number;
+  total_periods: number;
 }
 
 const StudentAttendance = () => {
@@ -78,7 +80,9 @@ const StudentAttendance = () => {
               date: d.date,
               month: d.month,
               year: d.year,
-              is_present: !!d.is_present,
+              status: d.status || 'Absent',
+              periods_present: d.periods_present || 0,
+              total_periods: d.total_periods || 7,
             }))
           );
         }
@@ -99,7 +103,7 @@ const StudentAttendance = () => {
     "July", "August", "September", "October", "November", "December"
   ];
 
-  const presentDays = attendance.filter((a) => a.is_present).length;
+  const presentDays = attendance.filter((a) => a.status === 'Present' || a.status === 'Half Day').length;
   const totalDays = attendance.length;
   const percentage = totalDays > 0 ? Math.round((presentDays / totalDays) * 100) : 0;
 
@@ -210,7 +214,7 @@ const StudentAttendance = () => {
                     <div
                       key={record.id}
                       className={`flex items-center justify-between p-3 rounded-lg ${
-                        record.is_present ? "bg-success/10" : "bg-destructive/10"
+                        record.status === 'Present' || record.status === 'Half Day' ? "bg-success/10" : "bg-destructive/10"
                       }`}
                     >
                       <span className="font-medium">
@@ -219,10 +223,15 @@ const StudentAttendance = () => {
                           day: "numeric",
                         })}
                       </span>
-                      {record.is_present ? (
+                      {record.status === 'Present' ? (
                         <span className="flex items-center gap-1 text-success text-sm">
                           <Check className="w-4 h-4" />
                           Present
+                        </span>
+                      ) : record.status === 'Half Day' ? (
+                        <span className="flex items-center gap-1 text-warning text-sm">
+                          <Check className="w-4 h-4" />
+                          Half Day
                         </span>
                       ) : (
                         <span className="flex items-center gap-1 text-destructive text-sm">
@@ -252,7 +261,7 @@ const StudentAttendance = () => {
                     <div
                       key={record.id}
                       className={`flex items-center justify-between p-3 rounded-lg ${
-                        record.is_present ? "bg-success/10" : "bg-destructive/10"
+                        record.status === 'Present' || record.status === 'Half Day' ? "bg-success/10" : "bg-destructive/10"
                       }`}
                     >
                       <span className="font-medium">
@@ -261,10 +270,15 @@ const StudentAttendance = () => {
                           day: "numeric",
                         })}
                       </span>
-                      {record.is_present ? (
+                      {record.status === 'Present' ? (
                         <span className="flex items-center gap-1 text-success text-sm">
                           <Check className="w-4 h-4" />
                           Present
+                        </span>
+                      ) : record.status === 'Half Day' ? (
+                        <span className="flex items-center gap-1 text-warning text-sm">
+                          <Check className="w-4 h-4" />
+                          Half Day
                         </span>
                       ) : (
                         <span className="flex items-center gap-1 text-destructive text-sm">

@@ -6,7 +6,21 @@ const router = Router();
 router.get('/', async (req: Request, res: Response) => {
   try {
     const db = getDb();
-    const studentsCount = await db.collection('students').countDocuments();
+    const { year } = req.query; // Optional: filter by student year (1, 2, or 3)
+
+    // Build student query (if year is provided)
+    let studentQuery: any = {};
+    if (year) {
+      studentQuery.year_of_study = Number(year);
+    }
+
+    // Get students in scope
+    const studentsCount = await db.collection('students').countDocuments(studentQuery);
+    
+    // Get all students in scope to find their IDs for attendance lookup
+    const studentIds = await db.collection('students').find(studentQuery).project({ _id: 1 }).toArray();
+    const studentIdSet = new Set(studentIds.map((s: any) => s._id.toString()));
+
     const totalSubjects = await db.collection('subjects').countDocuments();
 
     // Today's date string (assumes attendance.date stored as ISO string YYYY-MM-DD)
@@ -16,14 +30,26 @@ router.get('/', async (req: Request, res: Response) => {
     const dd = String(today.getDate()).padStart(2, '0');
     const todayStr = `${yyyy}-${mm}-${dd}`;
 
-    const attendanceToday = await db.collection('attendance').countDocuments({ date: todayStr, status: 'Present' });
+    // Count attendance today for students in scope
+    let attendanceQuery: any = { date: todayStr, status: 'Present' };
+    if (studentIdSet.size > 0) {
+      const studentIdArray = Array.from(studentIdSet);
+      attendanceQuery.student_id = { $in: studentIdArray };
+    }
+    const attendanceToday = await db.collection('attendance').countDocuments(attendanceQuery);
 
-    // Average attendance for current month: average of (periods_present / total_periods) * 100 across attendance docs
+    // Average attendance for current month: average of (periods_present / total_periods) * 100
     const month = today.getMonth() + 1;
-    const year = today.getFullYear();
+    const calendarYear = today.getFullYear();
+
+    let attendanceMatch: any = { month: month, year: calendarYear };
+    if (studentIdSet.size > 0) {
+      const studentIdArray = Array.from(studentIdSet);
+      attendanceMatch.student_id = { $in: studentIdArray };
+    }
 
     const agg = await db.collection('attendance').aggregate([
-      { $match: { month: month, year: year } },
+      { $match: attendanceMatch },
       { $project: { pct: { $multiply: [{ $divide: ['$periods_present', '$total_periods'] }, 100] } } },
       { $group: { _id: null, avgPct: { $avg: '$pct' } } },
     ]).toArray();

@@ -18,6 +18,7 @@ const FacultyDashboard = () => {
   const [stats, setStats] = useState(null);
   const [loading, setLoading] = useState(true);
   const [recentStudents, setRecentStudents] = useState<any[]>([]);
+  const [selectedYear, setSelectedYear] = useState<number>(1);
 
   useEffect(() => {
     if (!authLoading && (!profile || profile.role !== "faculty")) {
@@ -25,9 +26,9 @@ const FacultyDashboard = () => {
     }
   }, [profile, authLoading, navigate]);
 
-  const fetchStats = async () => {
+  const fetchStats = async (year: number) => {
     try {
-      const { res, data } = await fetchJson("/api/stats");
+      const { res, data } = await fetchJson(`/api/stats?year=${year}`);
 
       if (!res.ok) {
         toast.error(data?.error || "Failed to fetch stats");
@@ -37,7 +38,7 @@ const FacultyDashboard = () => {
       setStats(data);
       // fetch recent students to display with names
       try {
-        const { res: sres, data: sdata } = await fetchJson('/api/students');
+        const { res: sres, data: sdata } = await fetchJson(`/api/students?year_of_study=${year}`);
         if (sres.ok) {
           const arr = Array.isArray(sdata) ? sdata : [];
           setRecentStudents(arr.slice(0, 5));
@@ -54,8 +55,9 @@ const FacultyDashboard = () => {
   };
 
   useEffect(() => {
-    fetchStats();
-  }, []);
+    setLoading(true);
+    fetchStats(selectedYear);
+  }, [selectedYear]);
 
   if (authLoading || loading) {
     return (
@@ -79,22 +81,37 @@ const FacultyDashboard = () => {
           </p>
         </div>
 
+        {/* Year Selector */}
+        <div className="mb-8 flex gap-4">
+          <p className="text-muted-foreground font-medium flex items-center">Filter by Year:</p>
+          {[1, 2, 3].map((year) => (
+            <Button
+              key={year}
+              variant={selectedYear === year ? "default" : "outline"}
+              onClick={() => setSelectedYear(year)}
+              className="min-w-[80px]"
+            >
+              Year {year}
+            </Button>
+          ))}
+        </div>
+
         {/* Stats Grid */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
           <StatCard
-            title="Total Students"
+            title={`Total Students (Year ${selectedYear})`}
             value={stats.totalStudents}
             icon={<Users className="w-6 h-6" />}
             variant="primary"
           />
           <StatCard
-            title="Present Today"
+            title={`Present Today (Year ${selectedYear})`}
             value={stats.attendanceToday}
             icon={<Calendar className="w-6 h-6" />}
             variant="success"
           />
           <StatCard
-            title="Avg Attendance"
+            title={`Avg Attendance (Year ${selectedYear})`}
             value={`${stats.avgAttendance}%`}
             icon={<TrendingUp className="w-6 h-6" />}
             variant="accent"

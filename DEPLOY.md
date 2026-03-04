@@ -19,14 +19,33 @@ Vercel works well for both frontend and backend. You'll create two separate proj
 
 ### 1.1 Deploy Server (Backend)
 
+> **TypeScript dependencies:** ensure `@types/cors` (and any other `@types/*`) are listed under `dependencies` in `server/package.json`, not just `devDependencies`. This prevents build failures on Vercel.
+>
+> You can add it with:
+> ```bash
+> cd server
+> npm install @types/cors
+> git add package.json package-lock.json && git commit -m "chore: add @types/cors dependency" && git push
+> ```
+
 1. Go to [vercel.com](https://vercel.com) and sign in with GitHub
 2. Click **"Add New..."** → **"Project"**
 3. Import your server repo (`smgs-backend`)
 4. **Configure:**
    - Framework: **Other** (Node.js)
-   - Root Directory: `./` (or leave blank)
+   - Root Directory: `./` (or set to `server` if you imported the top‑level repo)
    - Build Command: (leave empty or `echo 'No build needed'`)
-   - Output Directory: (leave empty)
+   - **Output Directory:** _none_. If Vercel prompts for an output
+directory or complains about `public`, you have selected the wrong
+project type – backend projects don’t produce static files. The error
+"No Output Directory named 'public' found" means the deployment is
+trying to build a static site; instead create a separate project for
+the frontend and use `framework: Vite` there.
+
+> **Note:** only one `vercel.json` file should exist, and it must live at the
+> root of the backend repo (e.g. `server/vercel.json`). Earlier versions
+> accidentally placed a second, commented file under `src/`, which caused the
+> "Invalid vercel.json" message. That file was removed in a cleanup commit.
 5. Click **"Environment Variables"** and add:
    ```
    MONGODB_URI=mongodb+srv://username:password@cluster.mongodb.net/?retryWrites=true&w=majority
@@ -136,6 +155,43 @@ Separate platforms for more control.
 
 ---
 
+## Admin Setup & Faculty Management
+
+After deploying the backend, you need to create the initial super admin account:
+
+### Step 1: Run Admin Seed Script (Local)
+
+Run this locally in your server directory:
+
+```bash
+cd server
+npm run seed:admin
+```
+
+This creates an admin account with:
+- Email: `admin@smgs.com`
+- Password: `Admin@123456`
+
+**⚠️ Important:** Change this password immediately after logging in on production!
+
+### Step 2: Access Admin Dashboard
+
+1. Go to your frontend URL
+2. Click "Faculty Login" (note: faculty only login)
+3. Enter admin credentials:
+   - Email: `admin@smgs.com`
+   - Password: `Admin@123456`
+4. You'll be redirected to the **Admin Dashboard** at `/admin`
+
+### Step 3: Create Faculty Accounts
+
+Admins can now use the admin dashboard to:
+- Create faculty accounts by entering faculty name, email, and password
+- Verify with their admin password
+- Faculty accounts cannot be created via signup (disabled for security)
+
+---
+
 ## Security Checklist
 
 - [ ] `.env` file is locally-only and in `.gitignore`
@@ -144,6 +200,8 @@ Separate platforms for more control.
 - [ ] Server responds with `Access-Control-Allow-Origin: *` (or specific domain) for CORS
 - [ ] HTTPS is enabled on deployed URLs
 - [ ] Rotate MongoDB and JWT secrets if they were ever exposed
+- [ ] Admin account password changed from default (`Admin@123456`)
+
 
 ---
 
